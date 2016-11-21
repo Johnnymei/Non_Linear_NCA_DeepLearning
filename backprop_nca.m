@@ -1,5 +1,5 @@
 
-maxepoch=50;
+maxepoch=1;
 fprintf(1,'\nFine-tuning deep autoencoder by minimizing cross entropy error. \n');
 fprintf(1,'50 batches of 5000 cases each. \n');
 

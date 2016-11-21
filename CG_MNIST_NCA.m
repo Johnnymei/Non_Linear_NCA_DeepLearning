@@ -12,13 +12,15 @@
 % not been tested to the degree that would be advisable in any important
 % application.  All use of these programs is entirely at the user's own risk.
 
-function [f, df] = CG_MNIST_NCA(VV,Dim,XX,TT);
-
+function [f, df] = CG_MNIST_NCA(VV,Dim,XX,TT)
+ 
 l1 = Dim(1);
 l2 = Dim(2);
 l3 = Dim(3);
 l4= Dim(4);
 l5= Dim(5);
+ll = l5;
+
 N = size(XX,1);
 
 % Do decomversion.
@@ -32,124 +34,40 @@ w4 = reshape(VV(xxx+1:xxx+(l4+1)*l5),l4+1,l5);
 
 
 XX = [XX ones(N,1)];
-%N=25;
-%XX = XX(1:N, :); %TODO
-%TT = TT(1:N, :); %TODO: remove;
 w1probs    = 1./(1 + exp(-XX*w1)); w1probs = [w1probs  ones(N,1)];
 w2probs    = 1./(1 + exp(-w1probs*w2)); w2probs = [w2probs ones(N,1)];
 w3probs    = 1./(1 + exp(-w2probs*w3)); w3probs = [w3probs  ones(N,1)];
 f_x_W = 1./(1 + exp(-w3probs*w4)); %TODO
 
-dab     = zeros(l5, N, N);
-dab_2   = zeros(N, N);
-eab     = zeros(N, N);
-pab     = zeros(N, N);
 
+dab_2 = squareform(pdist(f_x_W));
+dab_2 = dab_2.^2;
+eab = exp(-dab_2);
+eab = eab-diag(diag(eab));
 
-% precomputation 
-
-for i=1:N
-    for j=i+1:N
-        dab(:, i,j) = f_x_W(i,:) -f_x_W(j,:);%
-        dab(:, j,i) = dab(:, i,j);
-        dab_2(i,j)  = dab(:, i,j)' * dab(:, i,j);
-        dab_2(j,i)  = dab_2(i,j);
-        eab(i,j)    = exp (-dab_2(i,j));
-        eab(j,i)    = eab(i,j);
-    end
-end 
-
-psum = sum(eab')';
-
+% how to optimize?
+psum = sum(eab, 2)';
+pab = zeros(N, N);
 for i=1:N
     for j=i+1:N
         pab(i,j) = eab(i,j)/psum(i);
         pab(j,i) = eab(j,i)/psum(j);
     end
-end 
-
-
-pab_dab = zeros(l5, N, N);
-
-for i=1:N
-    for j=1:N
-        pab_dab(:, i,j) = pab(i,j)*dab(:, i,j);
-    end
 end
 
-pab_sig_pazdaz = zeros(N, 30);
+pabdab = repmat(sum(TT*TT'.*pab,2),1,ll).*f_x_W-TT*TT'.*pab*f_x_W;
+a_pab_pazdaz = repmat((sum(TT*TT'.*pab,2)-diag(pab)),1,ll).*(repmat(sum(pab, 2),1,ll).*f_x_W-pab*f_x_W);
+pladla = TT*TT'.*pab'*f_x_W-repmat(diag(TT*TT'*pab),1,ll).*f_x_W;
+plqpladla = (repmat(diag(TT*TT'*pab')-diag(pab), 1, N).*pab)'*f_x_W-repmat(pab'*(diag(TT*TT'*pab')-diag(pab)), 1, ll).*f_x_W;
+pab_sig_pazdaz = -2*pabdab + 2*a_pab_pazdaz + 2*pladla - 2*plqpladla;
 
-for a=1:N
-    
-    %i = a, for each a
-    
-    %%%%% SUM(pab[SUMpazdaz]) %%%%%%%%% %%%%% SUM(pab[SUMpazdaz]) %%%%%%%%%
-    a_pab_sum = 0;
-    
-    for b=1:N
-        if TT(a,:) * TT(b,:)' > 0
-            a_pab_sum = a_pab_sum + pab(a,b);
-        end
-    end
-    
-    pazdaz = 0;
-    for z=1:N
-        if a == z
-            continue
-        else
-            pazdaz = pazdaz + pab_dab(:,a,z);
-        end
-    end
-    
-    a_pab_pazdaz = a_pab_sum .* pazdaz;
-    a_pab_pazdaz = 2 .* a_pab_pazdaz;
-    a_pab_pazdaz = a_pab_pazdaz';   
-    %%%%% SUM(pab[SUMpazdaz]) %%%%%%%%% %%%%% SUM(pab[SUMpazdaz]) %%%%%%%%%
-    
-        
-    %%%%% SUM[SUMplq]pladla]  %%%%%%%%% %%%%% SUM[SUMplq]pladla]  %%%%%%%%%
-    plqpladla = zeros(1,l5);
-    
-    for L=1:N
-        if a == L
-            continue
-        else
-            
-            sum_pLq = 0;
-            for q=1:N
-                if TT(L,:) * TT(q,:)' > 0
-                    sum_pLq = sum_pLq + pab(L,q);
-                end
-            end
-            plqpladla = plqpladla + (sum_pLq * pab(L,a) * dab(:,L,a))';
-        end
-            
-    end
-    
-    plqpladla = -2 .* plqpladla;
-    %%%%% SUM[SUMplq]pladla]  %%%%%%%%% %%%%% SUM[SUMplq]pladla]  %%%%%%%%%
-    
-        
-    
-    pab_sig_pazdaz(a,:) = a_pab_pazdaz + plqpladla;
+f = -sum(sum(TT*TT'.*pab));
 
-end 
-
-%%%%% calculate O_NCA  %%%%%%%%%
-f=0;
-for a=1:N   
-    for b=1:N
-        if TT(a,:) * TT(b,:)' > 0
-            f = f - pab(a,b);
-        end
-    end
-end
-
-fprintf(1,'%f\n',f);
+fprintf(1,'계산된 값, %f\n',f);
 
 IO = pab_sig_pazdaz;
 
-Ix4= -1 .* IO; 
+Ix4= -1.*IO; 
 
 dw4 = w3probs'*Ix4;
 

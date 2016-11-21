@@ -18,9 +18,9 @@ fprintf(1, 'Size of the training dataset= %5d \n', totnum);
 rand('state',0); %so we know the permutation of the training data
 randomorder=randperm(totnum);
 
-numbatches=totnum/500;
+numbatches=totnum/4000;
 numdims  =  size(digitdata,2);
-batchsize = 500; %minibatch size가 6천 (TODO: 맞는지?)
+batchsize = 4000; %minibatch size가 6천 (TODO: 맞는지?)
 batchdata = zeros(batchsize, numdims, numbatches);
 batchtargets = zeros(batchsize, 10, numbatches);
 %batchdata[5000 784 12]: 600*100 x 784를 분리한 것, 그걸 랜덤하게 아래에서 채우는 중
