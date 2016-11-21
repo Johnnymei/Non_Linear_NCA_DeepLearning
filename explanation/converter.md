@@ -3,10 +3,13 @@
 line-by-line code tracing
 
 1. Make sure you downloaded MNIST materials.
+
   ```MATLAB
   fprintf(1,'You first need to download files:\n train-images-idx3-ubyte.gz\n train-labels-idx1-ubyte.gz\n t10k-images-idx3-ubyte.gz\n t10k-labels-idx1-ubyte.gz\n from http://yann.lecun.com/exdb/mnist/\n and gunzip them \n');
   ```
+  
 2. Open file that contains digital images/labels for test.
+
   ```MATLAB
   f = fopen('t10k-images-idx3-ubyte.idx3-ubyte','r');
   [a,count] = fread(f,4,'int32');
