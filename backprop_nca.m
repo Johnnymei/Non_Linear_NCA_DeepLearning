@@ -1,5 +1,5 @@
 
-maxepoch=1;
+maxepoch=5;
 fprintf(1,'\nFine-tuning deep autoencoder by minimizing cross entropy error. \n');
 fprintf(1,'50 batches of 5000 cases each. \n');
 
@@ -36,7 +36,7 @@ for epoch = 1:maxepoch
 
     %%%%%%%%%%%%%%%%%%%% COMPUTE TRAINING RECONSTRUCTION ERROR %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     err=0; 
-    [numcases numdims numbatches]=size(batchdata); %%100 * 784 * 600
+    [numcases numdims numbatches]=size(batchdata); %%4000 * 784 * 600
     N=numcases;
      
     for batch = 1:numbatches

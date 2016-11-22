@@ -21,9 +21,9 @@ l4= Dim(4);
 l5= Dim(5);
 ll = l5;
 
-N = size(XX,1);
+N = size(XX,1); % 미니매치의 사이즈
 
-% Do decomversion.
+% Do decomversion. => 1차원 배열로 받은 것을 디컴포지셔닝해서 원래의 Weight Matrix로
 w1 = reshape(VV(1:(l1+1)*l2),l1+1,l2);
 xxx = (l1+1)*l2;
 w2 = reshape(VV(xxx+1:xxx+(l2+1)*l3),l2+1,l3);
@@ -33,7 +33,7 @@ xxx = xxx+(l3+1)*l4;
 w4 = reshape(VV(xxx+1:xxx+(l4+1)*l5),l4+1,l5);
 
 
-XX = [XX ones(N,1)];
+XX = [XX ones(N,1)]; %XX는 미미배치 데이터들이 들어있다. 각 row에 하나씩. 그리고 마지막 컬럼에 1추가요. bias.
 w1probs    = 1./(1 + exp(-XX*w1)); w1probs = [w1probs  ones(N,1)];
 w2probs    = 1./(1 + exp(-w1probs*w2)); w2probs = [w2probs ones(N,1)];
 w3probs    = 1./(1 + exp(-w2probs*w3)); w3probs = [w3probs  ones(N,1)];
@@ -45,15 +45,9 @@ dab_2 = dab_2.^2;
 eab = exp(-dab_2);
 eab = eab-diag(diag(eab));
 
-% how to optimize?
-psum = sum(eab, 2)';
-pab = zeros(N, N);
-for i=1:N
-    for j=i+1:N
-        pab(i,j) = eab(i,j)/psum(i);
-        pab(j,i) = eab(j,i)/psum(j);
-    end
-end
+
+psum = sum(eab, 2)'; %각 a에 대해 파티션 펑션을 이미 구해버렸다고 생각하면 됨
+pab = eab ./ repmat(psum',1, N);
 
 pabdab = repmat(sum(TT*TT'.*pab,2),1,ll).*f_x_W-TT*TT'.*pab*f_x_W;
 a_pab_pazdaz = repmat((sum(TT*TT'.*pab,2)-diag(pab)),1,ll).*(repmat(sum(pab, 2),1,ll).*f_x_W-pab*f_x_W);

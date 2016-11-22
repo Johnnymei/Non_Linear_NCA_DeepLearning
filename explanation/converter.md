@@ -7,7 +7,7 @@ line-by-line code tracing
   ```MATLAB
   fprintf(1,'You first need to download files:\n train-images-idx3-ubyte.gz\n train-labels-idx1-ubyte.gz\n t10k-images-idx3-ubyte.gz\n t10k-labels-idx1-ubyte.gz\n from http://yann.lecun.com/exdb/mnist/\n and gunzip them \n');
   ```
-  
+
 2. Open file that contains digital images/labels for test.
 
   ```MATLAB
@@ -17,14 +17,14 @@ line-by-line code tracing
   g = fopen('t10k-labels-idx1-ubyte.idx1-ubyte','r');
   [l,count] = fread(g,2,'int32');
   ```
-  
+
 3. set n = 1000
 
   ```MATLAB
   fprintf(1,'Starting to convert Test MNIST images (prints 10 dots) \n');
   n = 1000;
   ```
-  
+
 4. Create test files by chunking 1000 test tuple. Df(d+1) is a file descriptor related to 'testd.ascii'
 
   ```MATLAB
@@ -33,7 +33,7 @@ line-by-line code tracing
     Df{d+1} = fopen(['test' num2str(d) '.ascii'],'w');
   end;
   ```
-  
+
 5. Make test files for each label (test0.ascii will contain test data with label 0 after this phase)
 
   * Read 1000 test data tuples
@@ -70,7 +70,7 @@ line-by-line code tracing
     save(['test' num2str(d) '.mat'],'D','-mat');
   end;
   ```
-  
+
 7. In the same way as above, create training files
 
   ```MATLAB
@@ -109,7 +109,7 @@ line-by-line code tracing
     save(['digit' num2str(d) '.mat'],'D','-mat');
   end;
   ```
-  
+
 8. Remove .ascii files
 
   ```MATLAB
