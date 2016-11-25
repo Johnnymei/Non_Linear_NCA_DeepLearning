@@ -55,7 +55,7 @@ f(F, X, varargin{:});                                   % set up the function f
 % end
 [x, fX, i] = feval(p.method, x, fx, dfx, p);  % minimize using direction method
 X = rewrap(X, x);                   % convert answer to original representation
-if p.verbosity, printf('\n'); end
+%if p.verbosity, printf('\n'); end
 
 function [x, fx, i] = CG(x0, fx0, dfx0, p);
 if ~isfield(p, 'SIG'), p.SIG = 0.1; end       % default for line search quality
