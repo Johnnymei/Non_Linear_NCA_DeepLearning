@@ -57,7 +57,7 @@ pab_sig_pazdaz = -2*pabdab + 2*a_pab_pazdaz + 2*pladla - 2*plqpladla;
 
 f = -sum(sum(TT*TT'.*pab));
 
-fprintf(1,'계산된 값, %f\n',f);
+%fprintf(1,'계산된 값, %f\n',f);
 
 IO = pab_sig_pazdaz;
 

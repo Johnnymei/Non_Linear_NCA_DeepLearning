@@ -48,11 +48,11 @@ if ~isfield(p,'MFEPLS'), p.MFEPLS = 10; end    % Max Func Evals Per Line Search
 if ~isfield(p,'MSR'), p.MSR = 100; end                % Max Slope Ratio default
 f(F, X, varargin{:});                                   % set up the function f
 [fx, dfx] = f(x);                      % initial function value and derivatives
-if p.verbosity, printf('Initial Function Value %4.6e\r', fx); end
-if p.verbosity > 2,
-  clf; subplot(211); hold on; xlabel(p.S); ylabel('function value');
-  plot(p.length < 0, fx, '+'); drawnow;
-end
+% if p.verbosity, printf('Initial Function Value %4.6e\r', fx); end
+% if p.verbosity > 2,
+%   clf; subplot(211); hold on; xlabel(p.S); ylabel('function value');
+%   plot(p.length < 0, fx, '+'); drawnow;
+% end
 [x, fX, i] = feval(p.method, x, fx, dfx, p);  % minimize using direction method
 X = rewrap(X, x);                   % convert answer to original representation
 if p.verbosity, printf('\n'); end
@@ -160,7 +160,7 @@ while 1                               % keep interpolating as long as necessary
 end
 x = x0+p2.x*d; fx = p2.f; df = p2.df; a = p2.x;        % return the value found
 if p.length < 0, i = i+j; else i = i+1; end % count func evals or line searches
-if p.verbosity, printf('%s %6i;  value %4.6e\r', p.S, i, fx); end
+%if p.verbosity, printf('%s %6i;  value %4.6e\r', p.S, i, fx); end
 if wp(p2) < 2, i = -i; end                                   % indicate faliure
 if p.verbosity > 2
   if i>0, plot(norm(d)*p2.x, fx, 'go'); end

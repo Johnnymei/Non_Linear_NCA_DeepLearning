@@ -37,7 +37,6 @@ train_err=[];
 for epoch = 1:maxepoch
 
     %%%%%%%%%%%%%%%%%%%% COMPUTE TRAINING RECONSTRUCTION ERROR %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    err=0; 
     [numcases numdims numbatches]=size(batchdata); %%4000 * 784 * 600
     N=numcases;
      
@@ -63,6 +62,52 @@ for epoch = 1:maxepoch
         w4 = reshape(X(xxx+1:xxx+(l4+1)*l5),l4+1,l5);
 
         %%%%%%%%%%%%%%% END OF CONJUGATE GRADIENT WITH 3 LINESEARCHES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        %%%%%%%%%%%%%%%%%%%% COMPUTE TEST MISCLASSIFICATION ERROR %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+            %%%%%%%%%%%%%%%%%%%% 트레이닝 셋 매핑하기 %%%%%%%%%%%%%%%%%%%% 
+            
+            f_x_array = [];
+            target_array = [];
+            make_database;
+            
+            %%%%%%%%%%%%%%%%%%%% 각 테스트 데이터 배치에 대해 %%%%%%%%%%%%%%%%%%%% 
+            counter=0;
+            total = 0;
+            [testnumcases testnumdims testnumbatches]=size(testbatchdata);
+            tN=testnumcases;
+
+            for test_batch = 1:testnumbatches
+                
+                total = total + testnumcases;
+                
+                data = [testbatchdata(:,:,test_batch)];
+                target = [testbatchtargets(:,:,test_batch)];
+                data = [data ones(tN,1)];
+                
+                w1probs    = 1./(1 + exp(-data*w1)); w1probs = [w1probs  ones(tN,1)];
+                w2probs    = 1./(1 + exp(-w1probs*w2)); w2probs = [w2probs ones(tN,1)];
+                w3probs    = 1./(1 + exp(-w2probs*w3)); w3probs = [w3probs  ones(tN,1)];
+                testbatch_to_low = 1./(1 + exp(-w3probs*w4));
+                
+                D = pdist2(testbatch_to_low, f_x_array);
+                [M,I] = min(D, [], 2);
+                
+                for i = 1:testnumcases
+                    if( find ( 1== target_array(I(i), :)) == find( 1== target(i,:)) )
+                        counter = counter +1;
+                    end
+                end
+
+            end
+            
+        error_rate = counter / total * 100;
+        
+        fprintf('epoch: %d / %d, batch: %d / %d, value %2.2f\r', ...
+            epoch, maxepoch, batch, numbatches, error_rate);
+        
+        %%%%%%%%%%%%%%%%%%%% COMPUTE TEST MISCLASSIFICATION ERROR %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     end
     
  save mnist_weights_nca w1 w2 w3 w4

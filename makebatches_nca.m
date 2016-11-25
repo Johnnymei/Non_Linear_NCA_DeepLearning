@@ -32,37 +32,37 @@ end;
 %batchdata(:,:,b) 는 b번째 미니배치 데이터 집합을 뜻함 
 clear digitdata targets;
 
-digitdata=[];
-targets=[];
-load test0; digitdata = [digitdata; D]; targets = [targets; repmat([1 0 0 0 0 0 0 0 0 0], size(D,1), 1)]; 
-load test1; digitdata = [digitdata; D]; targets = [targets; repmat([0 1 0 0 0 0 0 0 0 0], size(D,1), 1)]; 
-load test2; digitdata = [digitdata; D]; targets = [targets; repmat([0 0 1 0 0 0 0 0 0 0], size(D,1), 1)];
-load test3; digitdata = [digitdata; D]; targets = [targets; repmat([0 0 0 1 0 0 0 0 0 0], size(D,1), 1)];
-load test4; digitdata = [digitdata; D]; targets = [targets; repmat([0 0 0 0 1 0 0 0 0 0], size(D,1), 1)];
-load test5; digitdata = [digitdata; D]; targets = [targets; repmat([0 0 0 0 0 1 0 0 0 0], size(D,1), 1)];
-load test6; digitdata = [digitdata; D]; targets = [targets; repmat([0 0 0 0 0 0 1 0 0 0], size(D,1), 1)];
-load test7; digitdata = [digitdata; D]; targets = [targets; repmat([0 0 0 0 0 0 0 1 0 0], size(D,1), 1)];
-load test8; digitdata = [digitdata; D]; targets = [targets; repmat([0 0 0 0 0 0 0 0 1 0], size(D,1), 1)];
-load test9; digitdata = [digitdata; D]; targets = [targets; repmat([0 0 0 0 0 0 0 0 0 1], size(D,1), 1)];
-digitdata = digitdata/255;
+digitdata_test=[];
+targets_test=[];
+load test0; digitdata_test = [digitdata_test; D]; targets_test = [targets_test; repmat([1 0 0 0 0 0 0 0 0 0], size(D,1), 1)]; 
+load test1; digitdata_test = [digitdata_test; D]; targets_test = [targets_test; repmat([0 1 0 0 0 0 0 0 0 0], size(D,1), 1)]; 
+load test2; digitdata_test = [digitdata_test; D]; targets_test = [targets_test; repmat([0 0 1 0 0 0 0 0 0 0], size(D,1), 1)];
+load test3; digitdata_test = [digitdata_test; D]; targets_test = [targets_test; repmat([0 0 0 1 0 0 0 0 0 0], size(D,1), 1)];
+load test4; digitdata_test = [digitdata_test; D]; targets_test = [targets_test; repmat([0 0 0 0 1 0 0 0 0 0], size(D,1), 1)];
+load test5; digitdata_test = [digitdata_test; D]; targets_test = [targets_test; repmat([0 0 0 0 0 1 0 0 0 0], size(D,1), 1)];
+load test6; digitdata_test = [digitdata_test; D]; targets_test = [targets_test; repmat([0 0 0 0 0 0 1 0 0 0], size(D,1), 1)];
+load test7; digitdata_test = [digitdata_test; D]; targets_test = [targets_test; repmat([0 0 0 0 0 0 0 1 0 0], size(D,1), 1)];
+load test8; digitdata_test = [digitdata_test; D]; targets_test = [targets_test; repmat([0 0 0 0 0 0 0 0 1 0], size(D,1), 1)];
+load test9; digitdata_test = [digitdata_test; D]; targets_test = [targets_test; repmat([0 0 0 0 0 0 0 0 0 1], size(D,1), 1)];
+digitdata_test = digitdata_test/255;
 
-totnum=size(digitdata,1);
+totnum=size(digitdata_test,1);
 fprintf(1, 'Size of the test dataset= %5d \n', totnum);
 
 rand('state',0); %so we know the permutation of the training data
 randomorder=randperm(totnum);
 
 numbatches=totnum/100;
-numdims  =  size(digitdata,2);
+numdims  =  size(digitdata_test,2);
 batchsize = 100;
 testbatchdata = zeros(batchsize, numdims, numbatches);
 testbatchtargets = zeros(batchsize, 10, numbatches);
 
 for b=1:numbatches
-  testbatchdata(:,:,b) = digitdata(randomorder(1+(b-1)*batchsize:b*batchsize), :);
-  testbatchtargets(:,:,b) = targets(randomorder(1+(b-1)*batchsize:b*batchsize), :);
+  testbatchdata(:,:,b) = digitdata_test(randomorder(1+(b-1)*batchsize:b*batchsize), :);
+  testbatchtargets(:,:,b) = targets_test(randomorder(1+(b-1)*batchsize:b*batchsize), :);
 end;
-clear digitdata targets;
+%clear digitdata_test targets_test;
 
 
 %%% Reset random seeds 
